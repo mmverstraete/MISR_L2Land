@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+   <head>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+      <title>Documentation for the IDL routines in project MISR_L2Land</title>
+   </head>
+<body>
+<h1>Documentation for the IDL routines in project MISR_L2Land</h1>
+<h2>make_land_retr_mask</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function returns a mask indicating where the standard <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> product is deemed retrievable given the outcome of the cloud and aerosol processing.</p></li>
+<li><p><strong>Algorithm:</strong> This function reads the field <code>Suitable_For_Land_Retrieval</code> from the <code>NetCDF</code> formatted <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> product corresponding to the selected <code>misr_path</code>, <code>misr_orbit</code> and <code>misr_block</code>, and returns a mask in the output parameter <code>land_retr_mask</code>, at the spatial resolution of 1100 m, indicating where the atmosphere is clear enough to retrieve the standard land surface product.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = make_land_retr_mask, misr_path, misr_orbit, misr_block, $</code><br />
+<code>land_retr_mask, LAND_VERSION = land_version, $</code><br />
+<code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> number.</p></li>
+<li><p><code>misr_orbit {LONG} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> number.</p></li>
+<li><p><code>misr_block {INTEGER} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Block</span> number.</p></li>
+<li><p><code>land_retr_mask {BYTE array [9, 4, 512, 128]} [O]:</code> The mask indicating where the atmosphere is clear enough to retrieve the <span class="smallcaps">MISR</span> standard land surface product.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>LAND_VERSION = land_version {STRING} [I] (Default value: &#8217;F08_0023&#8217;):</code> The version identifier of the <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> product.</p></li>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided in the call. The output positional parameter <code>land_retr_mask</code> contain(s) the desired mask, where each pixel value can take on one of the following values:</p>
+<ul>
+<li><p><code>0:</code> Unsuitable.</p></li>
+<li><p><code>1:</code> Suitable.</p></li>
+<li><p><code>255:</code> Fill value.</p></li>
+</ul></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The output positional parameter <code>land_retr_mask</code> may be undefined, inexistent, incomplete or useless.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_path</code> is invalid.</p></li>
+<li><p>Error 120: Input positional parameter <code>misr_orbit</code> is invalid.</p></li>
+<li><p>Error 130: Input positional parameter <code>misr_block</code> is invalid.</p></li>
+<li><p>Error 200: An exception condition occurred in <code>path2str.pro</code>.</p></li>
+<li><p>Error 300: An exception condition occurred in the <span class="smallcaps">MISR</span> <span class="smallcaps">Toolkit</span> routine<br />
+<code>MTK_MAKE_FILENAME</code>.</p></li>
+<li><p>Error 400: The <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> file implied by the input positional parameters does not exist or can be found in more than one place.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>MISR Toolkit</code></p></li>
+<li><p><code>chk_misr_block.pro</code></p></li>
+<li><p><code>chk_misr_orbit.pro</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>path2str.pro</code></p></li>
+<li><p><code>set_root_dirs.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong></p>
+<ul>
+<li><p><strong>Note 1:</strong> This function only works with <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> product versions equal to or posterior to <code>&#8217;F08_0023&#8217;</code>.</p></li>
+<li><p><strong>Note 2:</strong> The field <code>Suitable_For_Land_Retrieval</code> in the <code>NetCDF</code> formatted <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> product file is defined as a short (8-bit, signed) integer, which does not exist as a data type in <code>IDL</code>: upon reading, its value is converted to type <code>BYTE</code>. However, since the latter is unsigned, the decimal value <code>-1</code> in the original file (used for fill), equivalent to the binary value <code>11111111</code>, is read as a decimal value <code>255B</code> in the output mask.</p></li>
+</ul></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_path = 168
+IDL&gt; misr_orbit = 65487
+IDL&gt; misr_block = 110
+IDL&gt; rc = make_land_retr_mask(misr_path, misr_orbit, misr_block, $
+   land_retr_mask, /DEBUG, EXCPT_COND = excpt_cond)
+IDL&gt; PRINT, &#39;rc = &#39;, rc
+rc =        0</code></pre></li>
+<li><p><strong>References:</strong></p>
+<ul>
+<li><p>Michael J. Garay, Michael A. Bull, Marcin L. Witek, Abigail M. Nastan, Felix C. Seidel, David J. Diner, Ralph A. Kahn, James A. Limbacher, Olga V. Kalashnikova (2018) <em>Data Product Specification for the MISR Level 2 Land Surface Product</em>, NASA JPL D-100650, 22 pp. [See, in particular, the documentation for the field <code>Suitable_For_Surface_Retrieval</code>, on p. 17].</p></li>
+</ul></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2018&#8211;08&#8211;10: Version 0.8 &#8212; Initial release by Linda Hunt.</p></li>
+<li><p>2018&#8211;08&#8211;20: Version 0.9 &#8212; Documented version.</p></li>
+<li><p>2018&#8211;09&#8211;20: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+<h2>map_land_retr_mask</h2>
+<ul>
+<li><p><strong>Purpose:</strong> This function saves maps of the 36 land product retrievability masks for the specified <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span>, <span class="smallcaps">Orbit</span> and <span class="smallcaps">Block</span> in the standard location.</p></li>
+<li><p><strong>Algorithm:</strong> This function calls the function <code>make_land_retr_mask</code> to generate the land retrievability masks and saves maps of these masks in the standard location.</p></li>
+<li><p><strong>Syntax:</strong> <code>rc = map_land_retr_mask(misr_path, misr_orbit, $</code><br />
+<code>misr_block, LAND_VERSION = land_version, VERBOSE = verbose, $</code><br />
+<code>DEBUG = debug, EXCPT_COND = excpt_cond)</code></p></li>
+<li><p><strong>Positional parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>misr_path {INTEGER} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Path</span> number.</p></li>
+<li><p><code>misr_orbit {LONG} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Orbit</span> number.</p></li>
+<li><p><code>misr_block {INTEGER} [I]:</code> The selected <span class="smallcaps">MISR</span> <span class="smallcaps">Block</span> number.</p></li>
+</ul></li>
+<li><p><strong>Keyword parameters [Input/Output]:</strong></p>
+<ul>
+<li><p><code>LAND_VERSION = land_version {STRING} [I] (Default value: &#8217;F08_0023&#8217;):</code> The <span class="smallcaps">L2 Land</span> version to use.</p></li>
+<li><p><code>VERBOSE = VERBOSE {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) the printing of messages on the console about where the maps are saved.</p></li>
+<li><p><code>DEBUG = debug {INT} [I] (Default value: 0):</code> Flag to activate (<code>1</code>) or skip (<code>0</code>) debugging tests.</p></li>
+<li><p><code>EXCPT_COND = excpt_cond {STRING} [O] (Default value: &#8221;):</code> Description of the exception condition if one has been encountered, or a null string otherwise.</p></li>
+</ul></li>
+<li><p><strong>Returned value type:</strong> <code>INTEGER</code>.</p></li>
+<li><p><strong>Outcome:</strong></p>
+<ul>
+<li><p>If no exception condition has been detected, this function returns <code>0</code>, and the output keyword parameter <code>excpt_cond</code> is set to a null string, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided in the call. The maps of the 36 <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> retrievability masks are saved in the standard location.</p></li>
+<li><p>If an exception condition has been detected, this function returns a non-zero error code, and the output keyword parameter <code>excpt_cond</code> contains a message about the exception condition encountered, if the optional input keyword parameter <code>DEBUG</code> is set and if the optional output keyword parameter <code>EXCPT_COND</code> is provided. The maps of the 36 <span class="smallcaps">MISR</span> <span class="smallcaps">L2 Land</span> retrievability masks may be undefined, inexistent, incomplete or useless.</p></li>
+</ul></li>
+<li><p><strong>Exception conditions:</strong></p>
+<ul>
+<li><p>Error 100: One or more positional parameter(s) are missing.</p></li>
+<li><p>Error 110: Input positional parameter <code>misr_path</code> is invalid.</p></li>
+<li><p>Error 120: Input positional parameter <code>misr_orbit</code> is invalid.</p></li>
+<li><p>Error 130: Input positional parameter <code>misr_block</code> is invalid.</p></li>
+<li><p>Error 200: An exception condition occurred in <code>path2str.pro</code>.</p></li>
+<li><p>Error 210: An exception condition occurred in <code>orbit2str.pro</code>.</p></li>
+<li><p>Error 220: An exception condition occurred in <code>block2str.pro</code>.</p></li>
+<li><p>Error 230: An exception condition occurred in <code>make_land_retr_mask.pro</code>.</p></li>
+<li><p>Error 400: The standard output folder for the maps is unwritable.</p></li>
+<li><p>Error 240: An exception condition occurred in <code>is_writable.pro</code>.</p></li>
+<li><p>Error 250: An exception condition occurred in <code>make_bytemap.pro</code>.</p></li>
+</ul></li>
+<li><p><strong>Dependencies:</strong></p>
+<ul>
+<li><p><code>block2str.pro</code></p></li>
+<li><p><code>chk_misr_block.pro</code></p></li>
+<li><p><code>chk_misr_orbit.pro</code></p></li>
+<li><p><code>chk_misr_path.pro</code></p></li>
+<li><p><code>is_writable.pro</code></p></li>
+<li><p><code>make_bytemap.pro</code></p></li>
+<li><p><code>make_land_retr_mask.pro</code></p></li>
+<li><p><code>orbit2str.pro</code></p></li>
+<li><p><code>path2str.pro</code></p></li>
+<li><p><code>set_misr_specs.pro</code></p></li>
+<li><p><code>set_root_dirs.pro</code></p></li>
+<li><p><code>strstr.pro</code></p></li>
+</ul></li>
+<li><p><strong>Remarks:</strong> None.</p></li>
+<li><p><strong>Examples:</strong></p>
+<pre><code>IDL&gt; misr_path = 168
+IDL&gt; misr_orbit = 65487
+IDL&gt; misr_block = 110
+IDL&gt; rc = map_land_retr_mask(misr_path, misr_orbit, misr_block, $
+   /VERBOSE, /DEBUG, EXCPT_COND = excpt_cond)
+The L2 Land retrievability mask for camera DF and
+   spectral band Blue has been saved in
+   ~/MISR_HR/Outcomes/P168_O065487_B110/L2LA/
+      Retr_mask_P168_O065487_B110_DF_Blue.png.
+...
+The L2 Land retrievability mask for camera DA and
+   spectral band NIR has been saved in
+   ~/MISR_HR/Outcomes/P168_O065487_B110/L2LA/
+   Retr_mask_P168_O065487_B110_DA_NIR.png.
+IDL&gt;</code></pre></li>
+<li><p><strong>References:</strong> None.</p></li>
+<li><p><strong>Versioning:</strong></p>
+<ul>
+<li><p>2018&#8211;08&#8211;18: Version 0.9 &#8212; Initial release.</p></li>
+<li><p>2018&#8211;09&#8211;20: Version 1.0 &#8212; Initial public release.</p></li>
+</ul></li>
+</ul>
+</body>
+</html>
